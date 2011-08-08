@@ -4,3 +4,6 @@
 [submodule "src/linux"]
 	path = src/linux
 	url = git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+[submodule "src/kexec-tools"]
+	path = src/kexec-tools
+	url = git://git.kernel.org/pub/scm/utils/kernel/kexec/kexec-tools.git

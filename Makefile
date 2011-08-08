@@ -2,16 +2,16 @@
 
 bakka: initramfs.igz vmlinuz
 
-source: src
-	make -C src
+vmlinuz:
+	make -C src kernel
 
-vmlinuz: src
-	make -C src install
-
-initramfs.igz: source root
-	mkdir -p initramfs/{bin,sbin,etc,proc,sys}
+initramfs.igz: vmlinuz
+	make -C src busybox
+	make -C src kexec-tools
+	mkdir -p initramfs/{bin,sbin,etc,proc,sys,kexec}
 	make -C src install
 	cp -r root/* initramfs
+	cp vmlinuz initramfs/kexec
 	cd initramfs && find . | cpio -H newc -o > ../initramfs.cpio
 	rm -fr initramfs
 	gzip initramfs.cpio
