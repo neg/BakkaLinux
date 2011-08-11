@@ -1,0 +1,57 @@
+#!/bin/sh
+
+#===============================================================================
+# System
+#===============================================================================
+
+# Mount /etc/fstab
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+
+#Create all the symlinks to /bin/busybox
+busybox --install -s
+
+#Create device nodes
+mknod /dev/null c 1 3
+mknod /dev/tty c 5 0
+mdev -s
+
+#===============================================================================
+# pramfs
+#===============================================================================
+echo "* Setting up pramfs"
+depmod
+modprobe pramfs
+mkdir -p /mnt/pram
+
+if [ -d /seed ]; then
+    echo "* Init new pramfs"
+    mount -t pramfs -o physaddr=0x3200000,init=20M none /mnt/pram
+    cp /seed/* /mnt/pram
+    echo 0 > /mnt/pram/kcount
+else
+    echo "* Mounting old pramfs"
+    mount -t pramfs -o physaddr=0x3200000 none /mnt/pram
+fi
+
+#===============================================================================
+# kexec
+#===============================================================================
+echo "* Setting up kexec"
+kexec -l --reuse-cmdline --initrd=/mnt/pram/initramfs.cpio.gz /mnt/pram/vmlinuz
+
+#===============================================================================
+# System
+#===============================================================================
+# Calculate number of boots
+export KCOUNT=$(expr $(cat /mnt/pram/kcount) + 1)
+echo $KCOUNT > /mnt/pram/kcount
+
+# Set hostname
+hostname "bakka-$KCOUNT"
+
+echo "Bakka Linux keke (boot count: $KCOUNT)"
+echo "kexec -e to kexec and keep persistent files in /mnt/pram"
+
+export PS1='[\u@\h \W]\$ '
+/bin/sh
