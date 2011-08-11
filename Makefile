@@ -1,20 +1,19 @@
-.PHONY : bakka source
+.PHONY : bakka
 
-bakka: initramfs.igz vmlinuz
-
-vmlinuz:
+bakka:
 	make -C src kernel
-
-initramfs.igz: vmlinuz
 	make -C src busybox
 	make -C src kexec-tools
-	mkdir -p initramfs/{bin,sbin,etc,proc,sys,kexec}
+	# Create folders
+	mkdir -p initramfs/{bin,sbin,etc,proc,sys,kexeci,mnt}
+	# Install built targets to initramfs
 	make -C src install
-	cp -r root/* initramfs
 	cp vmlinuz initramfs/kexec
+	cp -r root/* initramfs
+	# Create initrd
 	cd initramfs && find . | cpio -H newc -o > ../initramfs.cpio
 	rm -fr initramfs
-	gzip initramfs.cpio
+	gzip -f initramfs.cpio
 
 clean:
 	make -C src clean
