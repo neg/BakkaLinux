@@ -7,3 +7,6 @@
 [submodule "src/kexec-tools"]
 	path = src/kexec-tools
 	url = git://git.kernel.org/pub/scm/utils/kernel/kexec/kexec-tools.git
+[submodule "src/pramfs"]
+	path = src/pramfs
+	url = git://pramfs.git.sourceforge.net/gitroot/pramfs/pramfs
