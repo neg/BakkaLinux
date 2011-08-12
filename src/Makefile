@@ -4,7 +4,7 @@ kernel: ../conf/linux
 	# Copy config
 	cp ../conf/linux linux/.config
 	# Patch with pramfs
-	cd pramfs && patch -p1 < ../0001-Add-missing-function.patch
+	cd pramfs && patch --merge -p1 < ../0001-Add-missing-function.patch
 	cd pramfs && ./patch-ker.sh ../linux
 	# compile
 	make -C linux bzImage
