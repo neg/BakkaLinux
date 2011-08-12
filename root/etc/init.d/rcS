@@ -24,29 +24,35 @@ depmod
 modprobe pramfs
 mkdir -p /mnt/pram
 
-if [ -d /seed ]; then
-    echo "* Init new pramfs"
-    mount -t pramfs -o physaddr=0x3200000,init=20M none /mnt/pram
-    cp /seed/* /mnt/pram
-    echo 0 > /mnt/pram/kcount
-else
-    echo "* Mounting old pramfs"
-    mount -t pramfs -o physaddr=0x3200000 none /mnt/pram
-fi
+# Figure out RAM for pramfs
+grep mem /proc/cmdline > /dev/null
+if [ $? -eq 0 ]; then
+    addr=$(sed 's/.*memmap=.*\$\([^ ]*\).*/\1/' < /proc/cmdline)
 
-#===============================================================================
-# kexec
-#===============================================================================
-echo "* Setting up kexec"
-kexec -l --reuse-cmdline --initrd=/mnt/pram/initramfs.cpio.gz /mnt/pram/vmlinuz
+    if [ -d /seed ]; then
+        echo "* Init new pramfs"
+        mount -t pramfs -o physaddr=$addr,init=20M none /mnt/pram
+        cp /seed/* /mnt/pram
+        echo 0 > /mnt/pram/kcount
+    else
+        echo "* Mounting old pramfs"
+        mount -t pramfs -o physaddr=$addr none /mnt/pram
+    fi
+
+    echo "* Setting up kexec"
+    kexec -l --reuse-cmdline --initrd=/mnt/pram/initramfs.cpio.gz /mnt/pram/vmlinuz
+
+    # Calculate number of boots
+    export KCOUNT=$(expr $(cat /mnt/pram/kcount) + 1)
+    echo $KCOUNT > /mnt/pram/kcount
+else
+    KCOUNT="no-mem"
+    echo "Can't find memory area for pram fs"
+fi
 
 #===============================================================================
 # System
 #===============================================================================
-# Calculate number of boots
-export KCOUNT=$(expr $(cat /mnt/pram/kcount) + 1)
-echo $KCOUNT > /mnt/pram/kcount
-
 # Set hostname
 hostname "bakka-$KCOUNT"
 
