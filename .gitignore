@@ -1,2 +1,4 @@
 vmlinuz
+initramfs/
+initramfs.cpio.gz
 initramfs-seed.cpio.gz
