@@ -5,7 +5,7 @@ bakka:
 	make -C src busybox
 	make -C src kexec-tools
 	# Crate directories
-	mkdir -p initramfs/{bin,dev,etc,mnt,proc,tmp}
+	mkdir -p initramfs/{bin,dev,etc,mnt,proc,tmp,sys}
 	# Install built targets to initramfs
 	make -C src install
 	cp vmlinuz initramfs/kexec
