@@ -6,6 +6,6 @@
 qemu-kvm \
     -nographic \
     -m 100 \
-    -append 'console=ttyS0,115200 memmap=20M$0x3200000' \
-    -initrd initramfs-seed.cpio.gz \
+    -append 'console=ttyS0,115200' \
+    -initrd initramfs.cpio.gz \
     -kernel vmlinuz

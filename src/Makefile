@@ -1,35 +1,26 @@
-.PHONY : clean install busybox kexec-tools kernel
+PHONY: clean install busybox kernel
+
+all: kernel busybox
 
 kernel: ../conf/linux
 	# Copy config
 	cp ../conf/linux linux/.config
-	# Patch with pramfs
-	cd pramfs && ./patch-ker.sh ../linux
-	# compile
-	make -C linux bzImage
-	make -C linux modules
+	# Compile
+	$(MAKE) -C linux bzImage
+	$(MAKE) -C linux modules
 
 busybox: ../conf/busybox
 	cp ../conf/busybox busybox/.config
-	make -C busybox
-
-kexec-tools:
-	cd kexec-tools && ./bootstrap
-	cd kexec-tools && LDFLAGS=-static ./configure
-	make -C kexec-tools
+	$(MAKE) -C busybox
 
 install:
 	# Kernel and modules
 	cp linux/arch/x86_64/boot/bzImage ../vmlinuz
 	mkdir -p ../initramfs/lib/modules
-	make -C linux modules_install INSTALL_MOD_PATH=../../initramfs
+	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=$(CURDIR)/../../initramfs
 	# BusyBox
-	make -C busybox install
-	# Kexe
-	mkdir -p ../initramfs/sbin
-	cp kexec-tools/build/sbin/* ../initramfs/sbin
+	$(MAKE) -C busybox install
 
 clean:
-	make -C busybox clean
-	make -C linux clean
-	make -C kexec-tools clean
+	$(MAKE) -C busybox clean
+	$(MAKE) -C linux clean
