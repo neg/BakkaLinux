@@ -17,47 +17,10 @@ mknod /dev/tty c 5 0
 mdev -s
 
 #===============================================================================
-# pramfs
-#===============================================================================
-echo "* Setting up pramfs"
-depmod
-modprobe pramfs
-mkdir -p /mnt/pram
-
-# Figure out RAM for pramfs
-grep mem /proc/cmdline > /dev/null
-if [ $? -eq 0 ]; then
-    addr=$(sed 's/.*memmap=.*\$\([^ ]*\).*/\1/' < /proc/cmdline)
-
-    if [ -d /seed ]; then
-        echo "* Init new pramfs"
-        mount -t pramfs -o physaddr=$addr,init=20M none /mnt/pram
-        cp /seed/* /mnt/pram
-        echo 0 > /mnt/pram/kcount
-    else
-        echo "* Mounting old pramfs"
-        mount -t pramfs -o physaddr=$addr none /mnt/pram
-    fi
-
-    echo "* Setting up kexec"
-    kexec -l --reuse-cmdline --initrd=/mnt/pram/initramfs.cpio.gz /mnt/pram/vmlinuz
-
-    # Calculate number of boots
-    export KCOUNT=$(expr $(cat /mnt/pram/kcount) + 1)
-    echo $KCOUNT > /mnt/pram/kcount
-else
-    KCOUNT="no-mem"
-    echo "Can't find memory area for pram fs"
-fi
-
-#===============================================================================
 # System
 #===============================================================================
 # Set hostname
-hostname "bakka-$KCOUNT"
-
-echo "Bakka Linux keke (boot count: $KCOUNT)"
-echo "kexec -e to kexec and keep persistent files in /mnt/pram"
+hostname "bakka"
 
 export PS1='[\u@\h \W]\$ '
 /bin/sh
