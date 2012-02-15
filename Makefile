@@ -14,6 +14,7 @@ initramfs.cpio:
 	rm -fr initramfs
 	mkdir -p initramfs/{bin,dev,etc,mnt,proc,tmp,sys}
 	make -C src install
+	cp -r fs/* initramfs
 	cp -r root/* initramfs
 	cd initramfs && find . | cpio -H newc -o > ../initramfs.cpio
 
