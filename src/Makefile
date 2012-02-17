@@ -17,7 +17,8 @@ install:
 	# Kernel and modules
 	cp linux/arch/x86_64/boot/bzImage ../vmlinuz
 	mkdir -p ../initramfs/lib/modules
-	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=$(CURDIR)/../../initramfs
+	mkdir -p ../fs/lib/modules
+	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=$(CURDIR)/../fs
 	# BusyBox
 	$(MAKE) -C busybox install
 
