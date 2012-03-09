@@ -1,0 +1,10 @@
+# Console
+::respawn:-/bin/sh
+
+# Startup
+::sysinit:/etc/init.d/rcS
+
+# Shutdown
+::ctrlaltdel:/sbin/reboot
+::shutdown:/bin/umount -a -r
+::shutdown:/sbin/swapoff -a
