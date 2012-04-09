@@ -1,5 +1,7 @@
 PHONY: clean install busybox kernel
 
+MODDIR=$(CURDIR)/../initramfs/lib/modules
+
 all: kernel busybox
 
 kernel: ../conf/linux
@@ -16,8 +18,8 @@ busybox: ../conf/busybox
 install:
 	# Kernel and modules
 	cp linux/arch/x86_64/boot/bzImage ../vmlinuz
-	mkdir -p ../initramfs/lib/modules
-	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=$(CURDIR)/../../initramfs
+	mkdir -p $(MODDIR)
+	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=$(MODDIR)
 	# BusyBox
 	$(MAKE) -C busybox install
 
