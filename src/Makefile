@@ -1,5 +1,6 @@
 PHONY: clean install busybox kernel
 
+NUMCPUS=`grep -c '^processor' /proc/cpuinfo`
 MODDIR=$(CURDIR)/../initramfs/lib/modules
 
 all: kernel busybox
@@ -8,8 +9,8 @@ kernel: ../conf/linux
 	# Copy config
 	cp ../conf/linux linux/.config
 	# Compile
-	$(MAKE) -C linux bzImage
-	$(MAKE) -C linux modules
+	$(MAKE) -j$(NUMCPUS) -C linux bzImage
+	$(MAKE) -j$(NUMCPUS) -C linux modules
 
 busybox: ../conf/busybox
 	cp ../conf/busybox busybox/.config
