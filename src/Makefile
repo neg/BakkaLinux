@@ -1,4 +1,4 @@
-PHONY: clean install busybox kernel
+.PHONY: clean install busybox kernel
 
 NUMCPUS=`grep -c '^processor' /proc/cpuinfo`
 ROOT=$(CURDIR)/../initramfs
