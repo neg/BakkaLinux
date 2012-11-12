@@ -1,27 +1,21 @@
-.PHONY: clean install busybox kernel
+.PHONY: all clean install busybox linux
 
 NUMCPUS=`grep -c '^processor' /proc/cpuinfo`
-ROOT=$(CURDIR)/../initramfs
 
-all: kernel busybox
-
-kernel: ../conf/linux
-	# Copy config
-	cp ../conf/linux linux/.config
-	# Compile
-	$(MAKE) -j$(NUMCPUS) -C linux bzImage
-	$(MAKE) -j$(NUMCPUS) -C linux modules
+all: linux busybox
 
 busybox: ../conf/busybox
 	cp ../conf/busybox busybox/.config
 	$(MAKE) -C busybox
 
+linux: ../conf/linux
+	cp ../conf/linux linux/.config
+	$(MAKE) -j$(NUMCPUS) -C linux bzImage
+	$(MAKE) -j$(NUMCPUS) -C linux modules
+
 install:
-	# Kernel and modules
-	cp linux/arch/x86_64/boot/bzImage ../vmlinuz
-	mkdir -p $(ROOT)/lib/modules
-	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=$(ROOT)
-	# BusyBox
+	$(MAKE) -C linux install INSTALL_PATH=../../
+	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=../../initramfs
 	$(MAKE) -C busybox install
 
 clean:

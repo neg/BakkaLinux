@@ -15,10 +15,11 @@ initramfs.cpio:
 	cd initramfs && find . | cpio -H newc -o > ../initramfs.cpio
 
 vmlinuz:
-	make -C src kernel
+	make -C src linux
 
 clean:
 	make -C src clean
 	rm -f vmlinuz
+	rm -f System.map
 	rm -f initramfs.cpio.gz
 	rm -fr initramfs
