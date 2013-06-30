@@ -13,7 +13,7 @@ initramfs.cpio:
 	make -C src install
 	cp -r root/* initramfs
 	cd initramfs && ln -s sbin/init init
-	cd initramfs && find . | cpio -H newc -o > ../initramfs.cpio
+	cd initramfs && find . | cpio --owner 0:0 -H newc -o > ../initramfs.cpio
 
 vmlinuz:
 	make -C src linux
