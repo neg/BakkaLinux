@@ -14,7 +14,8 @@ linux: ../conf/linux
 	$(MAKE) -j$(NUMCPUS) -C linux modules
 
 install:
-	$(MAKE) -C linux install INSTALL_PATH=../../
+	cp linux/arch/x86/boot/bzImage ../vmlinuz
+	cp linux/System.map ../
 	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=../../initramfs
 	$(MAKE) -C busybox install
 

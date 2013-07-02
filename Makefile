@@ -8,11 +8,12 @@ initramfs.cpio.gz: initramfs.cpio
 initramfs.cpio:
 	make -C src busybox
 	rm -fr initramfs
-	mkdir -p initramfs/{bin,dev,etc,mnt,proc,tmp,sys,root}
+	mkdir -p initramfs/bin initramfs/dev initramfs/etc initramfs/mnt \
+		initramfs/proc initramfs/tmp initramfs/sys initramfs/root
 	make -C src install
 	cp -r root/* initramfs
 	cd initramfs && ln -s sbin/init init
-	cd initramfs && find . | cpio -H newc -o > ../initramfs.cpio
+	cd initramfs && find . | cpio --owner 0:0 -H newc -o > ../initramfs.cpio
 
 vmlinuz:
 	make -C src linux
