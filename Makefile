@@ -32,6 +32,7 @@ busybox/busybox: busybox/.config
 	$(MAKE) -C busybox
 busybox/.config:
 	$(MAKE) -C busybox defconfig
+	echo "CONFIG_STATIC=y" >> busybox/.config
 
 clean:
 	$(MAKE) -C busybox clean
