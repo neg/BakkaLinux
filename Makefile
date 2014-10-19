@@ -13,8 +13,8 @@ rootfs: busybox/busybox linux/arch/x86/boot/bzImage
 	rm -fr rootfs
 	mkdir -p rootfs/bin rootfs/dev rootfs/etc rootfs/mnt \
 		rootfs/proc rootfs/tmp rootfs/sys rootfs/root
-	$(MAKE) -C busybox install
-	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=../../rootfs
+	$(MAKE) -C busybox install CONFIG_PREFIX=../rootfs
+	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=../rootfs
 	cp -r skel/* rootfs
 
 vmlinuz: linux/arch/x86/boot/bzImage
@@ -32,7 +32,6 @@ busybox/busybox: busybox/.config
 	$(MAKE) -C busybox
 busybox/.config:
 	$(MAKE) -C busybox defconfig
-	sed -i 's|CONFIG_PREFIX=".*"|CONFIG_PREFIX="../rootfs"|' busybox/.config
 
 clean:
 	$(MAKE) -C busybox clean
