@@ -2,5 +2,5 @@
 	path = busybox
 	url = git://git.busybox.net/busybox
 [submodule "src/linux"]
-	path = src/linux
+	path = linux
 	url = git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
