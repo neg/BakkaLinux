@@ -1,5 +1,8 @@
 .PHONY: all clean
 
+export ARCH=arm
+export CROSS_COMPILE=arm-linux-gnueabi-
+
 all: vmlinuz initramfs.cpio.gz
 
 initramfs.cpio.gz: initramfs.cpio
