@@ -4,6 +4,9 @@ export ARCH=arm
 export CROSS_COMPILE=arm-linux-gnueabi-
 
 all: uImage rootfs
+	sudo cp uImage /tftpboot
+	sudo rm -fr /srv/nfs4/emev2
+	sudo cp -r rootfs /srv/nfs4/emev2
 
 rootfs: busybox/busybox $(wildcard skel/*)
 	rm -fr rootfs
