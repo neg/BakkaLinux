@@ -1,5 +1,5 @@
 [submodule "src/busybox"]
-	path = src/busybox
+	path = busybox
 	url = git://git.busybox.net/busybox
 [submodule "src/linux"]
 	path = src/linux
