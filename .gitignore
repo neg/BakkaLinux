@@ -1,3 +1,2 @@
-vmlinuz
+uImage
 rootfs/
-initramfs.cpio.gz
