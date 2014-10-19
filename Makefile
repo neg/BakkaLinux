@@ -11,7 +11,7 @@ initramfs.cpio: busybox/busybox linux/arch/x86/boot/bzImage
 		initramfs/proc initramfs/tmp initramfs/sys initramfs/root
 	$(MAKE) -C busybox install
 	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=../../initramfs
-	cp -r root/* initramfs
+	cp -r skel/* initramfs
 	cd initramfs && ln -s sbin/init init
 	cd initramfs && find . | cpio --owner 0:0 -H newc -o > ../initramfs.cpio
 
