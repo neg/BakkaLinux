@@ -5,15 +5,17 @@ all: vmlinuz initramfs.cpio.gz
 initramfs.cpio.gz: initramfs.cpio
 	gzip -f initramfs.cpio
 
-initramfs.cpio: busybox/busybox linux/arch/x86/boot/bzImage
-	rm -fr initramfs
-	mkdir -p initramfs/bin initramfs/dev initramfs/etc initramfs/mnt \
-		initramfs/proc initramfs/tmp initramfs/sys initramfs/root
+initramfs.cpio: rootfs
+	cd rootfs && ln -s sbin/init init
+	cd rootfs && find . | cpio --owner 0:0 -H newc -o > ../initramfs.cpio
+
+rootfs: busybox/busybox linux/arch/x86/boot/bzImage
+	rm -fr rootfs
+	mkdir -p rootfs/bin rootfs/dev rootfs/etc rootfs/mnt \
+		rootfs/proc rootfs/tmp rootfs/sys rootfs/root
 	$(MAKE) -C busybox install
-	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=../../initramfs
-	cp -r skel/* initramfs
-	cd initramfs && ln -s sbin/init init
-	cd initramfs && find . | cpio --owner 0:0 -H newc -o > ../initramfs.cpio
+	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=../../rootfs
+	cp -r skel/* rootfs
 
 vmlinuz: linux/arch/x86/boot/bzImage
 	cp linux/arch/x86/boot/bzImage ../vmlinuz
@@ -30,7 +32,7 @@ busybox/busybox: busybox/.config
 	$(MAKE) -C busybox
 busybox/.config:
 	$(MAKE) -C busybox defconfig
-	sed -i 's|CONFIG_PREFIX=".*"|CONFIG_PREFIX="../initramfs"|' busybox/.config
+	sed -i 's|CONFIG_PREFIX=".*"|CONFIG_PREFIX="../rootfs"|' busybox/.config
 
 clean:
 	$(MAKE) -C busybox clean
@@ -38,4 +40,4 @@ clean:
 	rm -f vmlinuz
 	rm -f System.map
 	rm -f initramfs.cpio.gz
-	rm -fr initramfs
+	rm -fr rootfs
