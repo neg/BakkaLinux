@@ -11,6 +11,10 @@ rootfs: busybox/busybox $(wildcard skel/*)
 		rootfs/proc rootfs/tmp rootfs/sys rootfs/root
 	$(MAKE) -C busybox install CONFIG_PREFIX=../rootfs
 	cp -r skel/* rootfs
+rootfs.cpio: rootfs
+	fakeroot ./createcpio.sh
+rootfs.cpio.gz: rootfs.cpio
+	gzip $^
 
 uImage: linux/arch/arm/boot/zImage linux/arch/arm/boot/dts/emev2-kzm9d.dtb
 	cat linux/arch/arm/boot/zImage linux/arch/arm/boot/dts/emev2-kzm9d.dtb > /tmp/uImage.tmp

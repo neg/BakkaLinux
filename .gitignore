@@ -1,2 +1,4 @@
 uImage
 rootfs/
+rootfs.cpio
+rootfs.cpio.gz
