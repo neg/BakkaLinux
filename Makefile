@@ -7,9 +7,17 @@ emev2: KCONF=shmobile_defconfig
 emev2: uImage.emev2
 	sudo cp $^ /tftpboot/uImage
 
+zc706: KCONF=multi_v7_defconfig
+zc706: uImage.zc706
+	sudo cp $^ /tftpboot/uImage
+
 uImage.emev2: linux/arch/arm/boot/zImage linux/arch/arm/boot/dts/emev2-kzm9d.dtb
 	cat linux/arch/arm/boot/zImage linux/arch/arm/boot/dts/emev2-kzm9d.dtb > /tmp/uImage.tmp
 	mkimage -A arm -O linux -T kernel -C none -a 0x40008000 -e 0x40008000 -n "Bakka Linux for emev2" -d /tmp/uImage.tmp $@
+
+uImage.zc706: linux/arch/arm/boot/zImage linux/arch/arm/boot/dts/zynq-zc706.dtb
+	cat linux/arch/arm/boot/zImage linux/arch/arm/boot/dts/zynq-zc706.dtb > /tmp/uImage.tmp
+	mkimage -A arm -O linux -T kernel -C none -a 0x8000 -e 0x8000 -n "Bakka Linux for zc706" -d /tmp/uImage.tmp $@
 
 linux/arch/arm/boot/zImage: linux/.config rootfs.cpio.gz FORCE
 	$(MAKE) -C linux CONFIG_INITRAMFS_SOURCE="../rootfs.cpio.gz" all
