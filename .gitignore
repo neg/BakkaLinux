@@ -1,3 +1,6 @@
-vmlinuz
+uImage
 rootfs/
-initramfs.cpio.gz
+rootfs.cpio
+rootfs.cpio.gz
+devicetree.dtb
+uramdisk.image.gz
