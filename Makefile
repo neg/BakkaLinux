@@ -3,37 +3,14 @@
 export ARCH=arm
 export CROSS_COMPILE=arm-linux-gnueabi-
 
-all: vmlinuz initramfs.cpio.gz
-
-initramfs.cpio.gz: initramfs.cpio
-	gzip -f initramfs.cpio
-
-initramfs.cpio: rootfs
-	cd rootfs && ln -s sbin/init init
-	cd rootfs && find . | cpio --owner 0:0 -H newc -o > ../initramfs.cpio
-
-rootfs: busybox/busybox linux/arch/x86/boot/bzImage
-	rm -fr rootfs
-	mkdir -p rootfs/bin rootfs/dev rootfs/etc rootfs/mnt \
-		rootfs/proc rootfs/tmp rootfs/sys rootfs/root
-	$(MAKE) -C busybox install CONFIG_PREFIX=../rootfs
-	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=../rootfs
-	cp -r skel/* rootfs
-
-vmlinuz: linux/arch/x86/boot/bzImage
-	cp linux/arch/x86/boot/bzImage ../vmlinuz
-System.map: linux/arch/x86/boot/bzImage
-	cp linux/System.map ../
-linux/arch/x86/boot/bzImage: linux/.config
-	$(MAKE) -C linux bzImage
-	$(MAKE) -C linux modules
+linux/arch/arm/boot/zImage: linux/.config rootfs.cpio.gz FORCE
+	$(MAKE) -C linux CONFIG_INITRAMFS_SOURCE="../rootfs.cpio.gz" all
 linux/.config:
-	$(MAKE) -C linux defconfig
+	$(MAKE) -C linux $(KCONF)
 
 rootfs.cpio.gz: rootfs.cpio
 	rm -f $@
 	gzip $<
-
 rootfs.cpio: linux/.config busybox/busybox $(wildcard skel/*)
 	rm -fr rootfs rootfs.cpio
 	mkdir -p \
@@ -51,10 +28,8 @@ rootfs.cpio: linux/.config busybox/busybox $(wildcard skel/*)
 ifneq ($(shell grep "CONFIG_MODULES=y" linux/.config),)
 	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=../rootfs
 endif
-
 	cp -r skel/* rootfs
 	fakeroot ./createcpio.sh
-
 
 busybox/busybox: busybox/.config FORCE
 	$(MAKE) -C busybox
@@ -66,9 +41,8 @@ busybox/.config:
 clean:
 	$(MAKE) -C busybox clean
 	$(MAKE) -C linux clean
-	rm -f vmlinuz
-	rm -f System.map
 	rm -f initramfs.cpio.gz
+	rm -f uImage
 	rm -fr rootfs
 
 FORCE:
