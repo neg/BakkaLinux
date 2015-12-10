@@ -30,6 +30,31 @@ linux/arch/x86/boot/bzImage: linux/.config
 linux/.config:
 	$(MAKE) -C linux defconfig
 
+rootfs.cpio.gz: rootfs.cpio
+	rm -f $@
+	gzip $<
+
+rootfs.cpio: linux/.config busybox/busybox $(wildcard skel/*)
+	rm -fr rootfs rootfs.cpio
+	mkdir -p \
+		rootfs/bin \
+		rootfs/dev \
+		rootfs/etc \
+		rootfs/mnt \
+		rootfs/proc \
+		rootfs/tmp \
+		rootfs/sys \
+		rootfs/root \
+		rootfs/lib/modules
+
+	$(MAKE) -C busybox install CONFIG_PREFIX=../rootfs
+ifneq ($(shell grep "CONFIG_MODULES=y" linux/.config),)
+	$(MAKE) -C linux modules_install INSTALL_MOD_PATH=../rootfs
+endif
+
+	cp -r skel/* rootfs
+	fakeroot ./createcpio.sh
+
 
 busybox/busybox: busybox/.config FORCE
 	$(MAKE) -C busybox
