@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all clean FORCE
 
 export ARCH=arm
 export CROSS_COMPILE=arm-linux-gnueabi-
@@ -31,11 +31,12 @@ linux/.config:
 	$(MAKE) -C linux defconfig
 
 
-busybox/busybox: busybox/.config
+busybox/busybox: busybox/.config FORCE
 	$(MAKE) -C busybox
 busybox/.config:
+	rm -f busybox/.config
 	$(MAKE) -C busybox defconfig
-	echo "CONFIG_STATIC=y" >> busybox/.config
+	sed -i "s/# CONFIG_STATIC is not set/CONFIG_STATIC=y/" busybox/.config
 
 clean:
 	$(MAKE) -C busybox clean
@@ -44,3 +45,5 @@ clean:
 	rm -f System.map
 	rm -f initramfs.cpio.gz
 	rm -fr rootfs
+
+FORCE:
