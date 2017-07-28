@@ -55,8 +55,9 @@ busybox/.config:
 clean:
 	$(MAKE) -C busybox clean
 	$(MAKE) -C linux clean
-	rm -f initramfs.cpio.gz
-	rm -f uImage
+	rm -f uImage.*
 	rm -fr rootfs
+	rm -f rootfs.cpio
+	rm -f rootfs.cpio.gz
 
 FORCE:
