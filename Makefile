@@ -1,7 +1,7 @@
 .PHONY: all clean FORCE
 
 export ARCH=arm
-export CROSS_COMPILE=arm-linux-gnueabi-
+export CROSS_COMPILE=arm-linux-gnueabihf-
 
 emev2: KCONF=shmobile_defconfig
 emev2: uImage.emev2
